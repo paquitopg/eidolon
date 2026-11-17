@@ -1,0 +1,14 @@
+# Données (téléchargées ou collectées) : ne jamais versionner
+data/
+*.sqlite
+*.parquet
+
+# Secrets (identifiants Telegram, etc.)
+.env
+*.session
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
