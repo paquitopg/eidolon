@@ -27,7 +27,7 @@ Une **sentinelle** qui surveille l'apparition de nouveaux domaines, repère ceux
 
 ## Les briques du projet
 
-> **Version interactive :** [`docs/architecture-interactive.html`](docs/architecture-interactive.html). Survol pour voir les liens, clic pour le détail de chaque brique (outils, techniques DISARM, moment de préparation), filtres par étage. GitHub n'affiche pas les pages HTML d'un dépôt privé : clone le dépôt et ouvre le fichier dans un navigateur.
+> **Version interactive : https://paquitopg.github.io/eidolon/architecture-interactive.html**. Survol pour voir les liens, clic pour le détail de chaque brique (outils, techniques DISARM, moment de préparation), filtres par étage. Source : [`docs/architecture-interactive.html`](docs/architecture-interactive.html).
 
 ```mermaid
 flowchart TB
@@ -135,7 +135,8 @@ docs/
   contexte.md                  challenge, cadre juridique et institutionnel, menace observée
   donnees.md                   inventaire des ressources fournies et des sources externes
   architecture.md              les deux étages, indices, sorties, choix techniques
-  architecture-interactive.html  diagramme interactif des briques (à ouvrir dans un navigateur)
+  architecture-interactive.html  diagramme interactif des briques (publié sur GitHub Pages)
+  index.md                     page d'accueil du site GitHub Pages
   conformite-cnil.md           application de la délibération CNIL 2025-108
   plan.md                      préparation en amont / 3 jours sur place / répartition
   pistes-ecartees.md           idées étudiées et raisons de les écarter ou de les reporter

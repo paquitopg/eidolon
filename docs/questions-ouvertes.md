@@ -13,7 +13,7 @@
 - [ ] Interface : Streamlit ou FastAPI + front
 - [ ] Modèle de vision et de langage retenu (taille compatible avec le matériel disponible)
 - [ ] Licence du dépôt (open source : MIT comme D3lta ? EUPL ?)
-- [ ] Visibilité du dépôt : **privé pour l'instant**, public au moment du rendu ?
+- [ ] Visibilité du dépôt : **public tant qu'il ne contient que la documentation** (pour GitHub Pages), à repasser en privé au début du développement. Sur un compte gratuit, le site GitHub Pages sera alors dépublié
 
 ## À vérifier techniquement
 - [ ] Les données ouvertes de l'Afnic permettent-elles de suivre les nouveaux `.fr` ?
