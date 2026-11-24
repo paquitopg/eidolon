@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eidolon : les briques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Sofia+Sans+Condensed:wght@800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: carnet d'ingénieur, sobre, lisible par un jury institutionnel
+   IDEA: le schéma de câblage d'une salle de veille : chaque brique se branche, se suit au doigt
+   PICTURE: le diagramme lui-même, grand, en tête ; un panneau de détails à côté
+   COLOUR and TYPE: blanc, encre, vermillon pour les briques VIGINUM et le chemin suivi ; Sofia Sans Condensed + Instrument Sans
+   LAYOUT: titre court, filtres, figure pleine largeur, panneau à droite au-delà de 1280px, dessous sinon */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#120d0b);--ink:light-dark(#101418,#f3ede9);--mute:light-dark(#59616a,#ada39d);
+--panel:light-dark(#f4f5f6,#1c1512);--tint:light-dark(#f6f7f8,#19120f);--line:light-dark(#b9c0c7,#4a3d36);
+--node:light-dark(#ffffff,#211915);--acc:light-dark(#e8401a,#ff6a42);--acct:light-dark(#b8300c,#ff8a68)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Instrument Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,16px)}
+header.band{padding-bottom:12px}
+h1{font:800 clamp(32px,4.4vw,48px)/1.05 "Sofia Sans Condensed","Arial Narrow",sans-serif;margin:0 0 8px;text-wrap:balance}
+.lede{margin:0;max-width:70ch;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.bar button{font-family:inherit;font-size:15px;font-weight:600;line-height:1;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.bar button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar button:focus-visible,.nd:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+main.band{padding-top:8px}
+.stage{position:relative;min-width:1040px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+figure{margin:0}
+svg.dia{display:block;width:100%;height:auto;color:var(--ink)}
+figcaption{font-size:14px;color:var(--mute);margin-top:8px}
+.grp{fill:var(--tint);stroke:var(--line);stroke-dasharray:2 4}
+.gl{font:600 13px "Instrument Sans",sans-serif;fill:var(--mute)}
+.ch{font:800 15px "Sofia Sans Condensed",sans-serif;fill:var(--mute)}
+.ed{fill:none;stroke:var(--line);stroke-width:1.6;marker-end:url(#ah);transition:opacity .2s}
+.ed.dash{stroke-dasharray:5 4}
+.ed.on{stroke:var(--acc);stroke-width:2.4;marker-end:url(#ah2)}
+.el{font:600 12px "Instrument Sans",sans-serif;fill:var(--mute);paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+#ah path{fill:var(--line)}#ah2 path{fill:var(--acc)}
+.nd{cursor:pointer;outline:none;transition:opacity .2s}
+.nd rect{fill:var(--node);stroke:var(--ink);stroke-width:1.2}
+.nd.dash rect{stroke-dasharray:6 4}
+.nd .t{font:600 14px "Instrument Sans",sans-serif;fill:var(--ink)}
+.nd .s{font:400 12px "Instrument Sans",sans-serif;fill:var(--mute)}
+.nd .v{fill:var(--acc)}
+.nd.on rect{stroke:var(--acc);stroke-width:2.2}
+.nd.sel rect{stroke:var(--acc);stroke-width:3}
+.dim{opacity:.18}
+#pop{position:absolute;z-index:2;width:330px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 12px 32px rgb(0 0 0/.18)}
+#pop[hidden]{display:none}
+#pop h2{font:800 28px/1.05 "Sofia Sans Condensed",sans-serif;margin:0 52px 10px 0}
+#pop p{margin:0 0 12px;font-size:15px}
+#close{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:22px;background:transparent;color:var(--ink);font-family:inherit;font-size:28px;line-height:1;cursor:pointer}
+#close:focus-visible{outline:3px solid var(--acc)}
+@media(max-width:700px){#pop{position:fixed;left:8px;right:8px;bottom:8px;width:auto;max-height:62vh;overflow:auto}}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tag{font-size:13px;font-weight:600;padding:3px 10px;border-radius:12px;border:1px solid var(--line)}
+.tag.v{border-color:var(--acc);color:var(--acct)}
+dl{margin:0;display:grid;gap:4px 12px;grid-template-columns:7.5em minmax(0,1fr);font-size:15px}
+dt{color:var(--mute)}dd{margin:0}
+#pop a{color:var(--acct)}
+.legend{list-style:none;padding:0;margin:10px 0 0;font-size:14px;color:var(--mute);display:flex;flex-wrap:wrap;gap:6px 22px}
+.legend svg{vertical-align:middle;margin-right:8px}
+.hint{font-size:14px;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){.ed,.nd{transition:none}}
+</style>
+</head>
+<body>
+<header class="band">
+  <h1>eidolon : les briques du projet</h1>
+  <p class="lede">De l'apparition d'un nouveau domaine à la fiche transmise à l'analyste. Survole une brique pour voir ce qui l'alimente et ce qu'elle produit ; clique pour le détail.</p>
+  <div class="bar" role="group" aria-label="Filtrer le diagramme" id="bar"></div>
+</header>
+<main class="band">
+  <figure>
+    <div class="scroll"><div class="stage" id="stage"><svg class="dia" id="dia" viewBox="0 0 1300 850" role="img" aria-label="Diagramme des briques d'eidolon : sources, sentinelle des faux médias, coordination des comptes, sorties vers OpenCTI et l'analyste, briques transverses et bonus"></svg><div id="pop" role="dialog" aria-live="polite" hidden></div></div></div>
+    <figcaption>Sur petit écran, fais défiler le schéma horizontalement.</figcaption>
+    <ul class="legend"><li><svg width="34" height="12" aria-hidden="true"><line x1="0" y1="6" x2="34" y2="6" stroke="currentColor" stroke-dasharray="5 4"/></svg>À vérifier ou bonus</li><li><svg width="14" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="var(--acc)"/></svg>Réutilise un outil ou une donnée VIGINUM</li><li><svg width="34" height="12" aria-hidden="true"><line x1="0" y1="6" x2="34" y2="6" stroke="var(--acc)" stroke-width="2.4"/></svg>Lien de la brique sélectionnée</li></ul>
+  </figure>
+</main>
+<script>
+{
+const REPO='https://github.com/paquitopg/eidolon/blob/main/docs/';
+const N=[
+{id:'ct',x:20,y:50,w:180,t:'Certificats TLS',s:'Certificate Transparency',g:'src1',when:'Avant : tester le flux',desc:"Chaque certificat TLS émis est publié dans des journaux publics. Un faux site en HTTPS y apparaît dès sa mise en ligne, souvent avant toute diffusion.",tools:'crt.sh (historique), certstream (temps réel, serveur de secours à prévoir)',doc:'donnees.md'},
+{id:'afnic',x:20,y:120,w:180,t:'Données .fr Afnic',s:'à vérifier',g:'src1',b:1,when:'Avant : vérifier existence et contenu',desc:"Piste pour suivre les nouveaux domaines en .fr, utiles contre les faux sites de presse locale comme aux municipales 2026.",tools:'Données ouvertes Afnic (à confirmer)',doc:'donnees.md'},
+{id:'ref',x:20,y:190,w:180,t:'Liste de référence',s:'médias et institutions',g:'src1',when:'Avant : travail clé',desc:"Médias nationaux, presse régionale et locale, domaines gouv.fr : nom, domaine, logo. Base de comparaison pour la ressemblance du nom et la ressemblance visuelle.",tools:'À constituer à la main',doc:'donnees.md'},
+{id:'rss',x:20,y:260,w:180,t:'Flux RSS presse',s:'nationale et locale',g:'src1',when:'Avant : archiver en continu',desc:"Corpus d'articles légitimes auquel D3lta compare les articles des sites suspects.",tools:'Collecte RSS planifiée',doc:'donnees.md'},
+{id:'tg',x:20,y:440,w:180,t:'Telegram',s:'chaînes publiques',g:'src2',when:'Avant : identifiants d\'API',desc:"Collecte des chaînes publiques. Terrain de test : les 27 chaînes Telegram listées par VIGINUM pour Portal Kombat.",tools:'Telethon, identifiants via my.telegram.org',doc:'donnees.md'},
+{id:'bs',x:20,y:510,w:180,t:'Bluesky',s:'flux Jetstream',g:'src2',when:'J2 : démo en direct',desc:"Flux complet ouvert, gratuit et en temps réel. Idéal pour la démo, mais peu de campagnes y sont documentées.",tools:'Jetstream (WebSocket JSON)',doc:'donnees.md'},
+{id:'i1',x:260,y:70,w:520,t:'Ressemblance du nom',s:'filtre rapide sur tout le flux',g:'e1',when:'Avant + J1',desc:"Distance d'édition, homoglyphes, changement d'extension (.ltd, .pics), lettres ajoutées. Peu coûteux : seuls les candidats passent aux indices suivants.",tools:'rapidfuzz, variantes à la dnstwist',disarm:'T0099.004, T0099.002',doc:'architecture.md'},
+{id:'i3',x:260,y:150,w:164,h:64,t:'Contenu reformulé',s:'D3lta vs flux RSS',g:'e1',v:1,when:'J1',desc:"Un site qui republie la presse en la réécrivant est un signal fort : c'est le mode opératoire des faux sites locaux des municipales 2026.",tools:'D3lta (modes reformulation et traduction)',disarm:'T0084.002, T0085.003',doc:'architecture.md'},
+{id:'i2',x:438,y:150,w:164,h:64,t:'Ressemblance visuelle',s:'capture + modèle vision',g:'e1',when:'J1',desc:"Capture d'écran du site suspect dans un environnement isolé, comparée au site légitime ; un modèle de vision ouvert repère un logo ou une charte imités.",tools:'Playwright, modèle de vision ouvert',disarm:'T0099.004',doc:'architecture.md'},
+{id:'i4',x:616,y:150,w:164,h:64,t:'Infrastructure',s:'rafales, hébergeur',g:'e1',when:'J1',desc:"Domaines créés en rafale, même hébergeur, même bureau d'enregistrement, mêmes certificats : de quoi relier les domaines entre eux et remonter vers l'origine.",tools:'WHOIS / RDAP, DNS, certificats',disarm:'T0098.001, T0013',doc:'architecture.md'},
+{id:'s1',x:260,y:250,w:520,h:56,t:'Score expliqué',s:'contribution de chaque indice affichée',g:'e1',when:'J1',desc:"V0 : règles pondérées et lisibles. V1 : régression logistique calibrée, avec les domaines RRN et Portal Kombat en positifs et des domaines tirés au hasard du flux en négatifs.",tools:'Python, scikit-learn',doc:'architecture.md'},
+{id:'col',x:260,y:440,w:520,t:'Collecte ciblée',s:'uniquement les posts qui contiennent une URL signalée',g:'e2',when:'Avant (hors ligne) + J2',desc:"Déclenchée seulement par un domaine signalé : pas de surveillance large des réseaux. C'est le filtrage par critères précis demandé par la délibération CNIL 2025-108.",tools:'Telethon, Jetstream',doc:'conformite-cnil.md'},
+{id:'j1',x:260,y:520,w:121,h:64,t:'Co-partage',s:'URL synchronisées',g:'e2',when:'J2',desc:"Deux comptes sont reliés s'ils partagent la même URL à quelques secondes d'intervalle. Fenêtre estimée sur les données.",tools:'Méthode CooRnet (coordinated link sharing)',disarm:'T0049.003, T0119',doc:'architecture.md'},
+{id:'j2',x:393,y:520,w:121,h:64,t:'Copier-coller',s:'D3lta',g:'e2',v:1,when:'J2',desc:"Textes identiques ou quasi identiques publiés par plusieurs comptes.",tools:'D3lta',disarm:'T0084.001',doc:'architecture.md'},
+{id:'j3',x:526,y:520,w:121,h:64,t:'Rafales',s:'dates de création',g:'e2',when:'J2',desc:"Comptes d'un même groupe créés dans une fenêtre très courte.",tools:'Métadonnées des comptes',disarm:'T0090',doc:'architecture.md'},
+{id:'j4',x:659,y:520,w:121,h:64,t:'Centralité',s:'super-diffuseurs',g:'e2',when:'J2',desc:"Centralité et détection de communautés dans le graphe de co-partage : super-diffuseurs et comptes qui font le pont entre plateformes.",tools:'networkx ou igraph',doc:'architecture.md'},
+{id:'s2',x:260,y:620,w:520,h:56,t:'Score de coordination',s:'par groupe de comptes, détaillé par indice',g:'e2',when:'J2',desc:"Un score par groupe de comptes, jamais par individu, avec la contribution de chaque indice.",tools:'Python',doc:'architecture.md'},
+{id:'fiche',x:850,y:120,w:190,t:'Fiche par domaine',s:'captures, extraits comparés',g:'out',when:'J1',desc:"Score, indices, captures d'écran, articles reformulés mis en regard de l'original.",tools:'Streamlit ou FastAPI + front',doc:'architecture.md'},
+{id:'stix',x:850,y:345,w:190,t:'Export STIX 2.1',s:'techniques DISARM-FR',g:'out',v:1,when:'Avant + J2',desc:"Domaines, URL, indicateurs, infrastructures, comptes et relations, étiquetés avec le référentiel DISARM-FR traduit par VIGINUM.",tools:'Bibliothèque stix2 (OASIS), DISARM-FR',doc:'architecture.md'},
+{id:'graphe',x:850,y:620,w:190,t:'Graphe des comptes',s:'identifiants pseudonymisés',g:'out',when:'J2',desc:"Graphe interactif des groupes coordonnés. Identifiants hachés avec sel ; la réidentification reste réservée à l'analyste habilité.",tools:'Interface web',doc:'conformite-cnil.md'},
+{id:'octi',x:1080,y:345,w:190,t:'OpenCTI',s:'doctrine VIGINUM',g:'out',v:1,when:'Avant : tester l\'import',desc:"Les objets produits s'importent dans OpenCTI, l'outil de capitalisation de VIGINUM, selon sa doctrine publiée. Le README RRN indique OpenCTI 5.9.6.",tools:'Instance OpenCTI locale de test',doc:'architecture.md'},
+{id:'an',x:1080,y:120,w:190,t:'Analyste',s:'décide, rien d\'automatique',g:'out',when:'—',desc:"Le score est une aide à la décision. Aucun signalement ni retrait n'est déclenché automatiquement.",tools:'—',doc:'conformite-cnil.md'},
+{id:'vd',x:20,y:770,w:180,t:'Données VIGINUM',s:'RRN · Portal Kombat · STIX',g:'trans',v:1,rel:['ev'],when:'Avant',desc:"637 domaines RRN avec date de création, 371 domaines Portal Kombat, 4 bundles STIX (comptes, chaînes, techniques DISARM).",tools:'scripts/inventaire_donnees_viginum.py',doc:'donnees.md'},
+{id:'ev',x:240,y:770,w:270,t:'Évaluation',s:'rejeu RRN · chaînes Portal Kombat',g:'trans',rel:['s1','s2','vd'],when:'Avant + J3',desc:"Part des domaines RRN repérés et nombre de jours d'avance sur leur signalement ; chaînes Telegram de Portal Kombat retrouvées par la méthode de coordination.",tools:'crt.sh pour la date du premier certificat',doc:'plan.md'},
+{id:'jr',x:530,y:770,w:270,t:'Journal des collectes',s:'délibération CNIL 2025-108',g:'trans',rel:['col'],when:'J2',desc:"Chaque collecte est tracée (déclencheur, période, plateforme, volume), dans un format exportable pour un contrôle de type comité d'éthique.",tools:'Journal structuré',doc:'conformite-cnil.md'},
+{id:'as',x:850,y:770,w:190,t:'Assistant d\'analyse',s:'bonus · fiche DISARM',g:'bonus',b:1,rel:['stix','s1','s2'],when:'Si le temps le permet',desc:"Un modèle de langage ouvert rédige une fiche d'analyse à partir des sorties, en citant ses preuves.",tools:'Modèle de langage ouvert',disarm:'DISARM-FR',doc:'pistes-ecartees.md'},
+{id:'nr',x:1080,y:770,w:190,t:'Narratifs RU → FR',s:'bonus · D3lta traduction',g:'bonus',b:1,v:1,rel:['i3','vd'],when:'Si le temps le permet',desc:"Suivi des contenus traduits du russe vers le français sur les sites Portal Kombat.",tools:'D3lta (mode traduction)',doc:'pistes-ecartees.md'}
+];
+const E=[
+['ct','i1',[[200,77],[260,88]]],['afnic','i1',[[200,147],[260,100]],1],['ref','i1',[[200,217],[260,112]]],
+['rss','i3',[[200,287],[228,287],[228,190],[260,190]]],
+['i1','i3',[[342,120],[342,150]],0,'candidats',352,140],['i1','i2',[[520,120],[520,150]]],['i1','i4',[[698,120],[698,150]]],
+['i3','s1',[[342,214],[342,250]]],['i2','s1',[[520,214],[520,250]]],['i4','s1',[[698,214],[698,250]]],
+['s1','col',[[520,306],[520,440]],0,'domaine signalé',530,377],
+['tg','col',[[200,467],[260,458]]],['bs','col',[[200,537],[260,474]]],
+['col','j1',[[320,490],[320,520]]],['col','j2',[[453,490],[453,520]]],['col','j3',[[586,490],[586,520]]],['col','j4',[[719,490],[719,520]]],
+['j1','s2',[[320,584],[320,620]]],['j2','s2',[[453,584],[453,620]]],['j3','s2',[[586,584],[586,620]]],['j4','s2',[[719,584],[719,620]]],
+['s1','fiche',[[780,268],[820,268],[820,147],[850,147]]],['s1','stix',[[780,290],[835,290],[835,362],[850,362]]],
+['s2','stix',[[780,636],[835,636],[835,385],[850,385]]],['s2','graphe',[[780,656],[850,656]]],
+['stix','octi',[[1040,372],[1080,372]]],['octi','an',[[1175,345],[1175,174]]],['fiche','an',[[1040,147],[1080,147]]],
+['graphe','an',[[1040,647],[1287,647],[1287,147],[1270,147]]],
+['vd','ev',[[200,797],[240,797]]]
+];
+const F=[
+['tout','Tout',null],
+['e1','Étage 1 : sentinelle',n=>['src1','e1'].includes(n.g)||['fiche','stix','octi','an'].includes(n.id)],
+['e2','Étage 2 : coordination',n=>['src2','e2'].includes(n.g)||['s1','graphe','stix','octi','an'].includes(n.id)],
+['vig','Briques VIGINUM',n=>!!n.v],
+['path',"Chemin d'un faux domaine",n=>['ct','i1','i3','i2','i4','s1','col','j1','j2','s2','stix','octi','an'].includes(n.id)],
+['bonus','Transverse et bonus',n=>['trans','bonus'].includes(n.g)]
+];
+const byId=Object.fromEntries(N.map(n=>[n.id,n]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const svg=document.getElementById('dia'),pop=document.getElementById('pop'),bar=document.getElementById('bar');
+const grp=(x,y,w,h,l)=>`<rect class="grp" x="${x}" y="${y}" width="${w}" height="${h}" rx="14"/><text class="gl" x="${x+16}" y="${y+24}">${esc(l)}</text>`;
+let h='<defs>'+['ah','ah2'].map(i=>`<marker id="${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z"/></marker>`).join('')+'</defs>';
+h+=grp(240,30,560,300,'Étage 1 · Sentinelle des faux médias')+grp(240,400,560,300,'Étage 2 · Coordination des comptes');
+h+=`<text class="ch" x="20" y="36">Sources</text><text class="ch" x="20" y="426">Réseaux sociaux</text><text class="ch" x="850" y="100">Sorties</text><text class="ch" x="1080" y="100">Usage</text><text class="ch" x="20" y="756">Transverse et bonus</text>`;
+h+=E.map((e,i)=>`<path class="ed${e[3]?' dash':''}" id="e${i}" d="M${e[2].map(p=>p.join(' ')).join(' L')}"/>`).join('');
+h+=E.filter(e=>e[4]).map(e=>`<text class="el" x="${e[5]}" y="${e[6]}">${esc(e[4])}</text>`).join('');
+h+=N.map(n=>{const H=n.h||54,cx=n.x+n.w/2;return `<g class="nd${n.b?' dash':''}" id="n-${n.id}" data-id="${n.id}" tabindex="0" role="button" aria-label="${esc(n.t+' : '+n.s)}"><rect x="${n.x}" y="${n.y}" width="${n.w}" height="${H}" rx="9"/><text class="t" x="${cx}" y="${n.y+H/2-3}" text-anchor="middle">${esc(n.t)}</text><text class="s" x="${cx}" y="${n.y+H/2+15}" text-anchor="middle">${esc(n.s)}</text>${n.v?`<circle class="v" cx="${n.x+n.w-10}" cy="${n.y+10}" r="5"/>`:''}</g>`}).join('');
+svg.innerHTML=h;
+const nbrs=id=>{const s=new Set([id,...(byId[id].rel||[])]);E.forEach(e=>{if(e[0]===id)s.add(e[1]);if(e[1]===id)s.add(e[0])});N.forEach(n=>{if((n.rel||[]).includes(id))s.add(n.id)});return s};
+let filt='tout',sel=null;
+function paint(focus){
+  let act=null;
+  if(focus)act=nbrs(focus);else if(sel)act=nbrs(sel);else{const f=F.find(x=>x[0]===filt);if(f[2])act=new Set(N.filter(f[2]).map(n=>n.id))}
+  const hub=focus||sel;
+  N.forEach(n=>{const g=document.getElementById('n-'+n.id);g.classList.toggle('dim',!!act&&!act.has(n.id));g.classList.toggle('on',!!hub&&act.has(n.id)&&n.id!==hub);g.classList.toggle('sel',n.id===sel)});
+  E.forEach((e,i)=>{const p=document.getElementById('e'+i);const inn=!act||(act.has(e[0])&&act.has(e[1]));const lit=hub?(e[0]===hub||e[1]===hub):(filt==='path'&&inn);p.classList.toggle('dim',!inn||(hub&&!lit));p.classList.toggle('on',!!lit)});
+}
+const stage=document.getElementById('stage');
+function place(){
+  if(!sel||pop.hidden)return;
+  if(matchMedia('(max-width:700px)').matches){pop.style.left=pop.style.top='';return}
+  const r=document.getElementById('n-'+sel).getBoundingClientRect(),s=stage.getBoundingClientRect(),W=pop.offsetWidth,Hp=pop.offsetHeight;
+  let left=r.right-s.left+14,top=r.top-s.top;
+  if(left+W>s.width-8)left=r.left-s.left-W-14;
+  if(left<8){left=Math.min(Math.max(8,r.left-s.left),s.width-W-8);top=r.bottom-s.top+10}
+  top=Math.max(8,Math.min(top,s.height-Hp-8));
+  pop.style.left=left+'px';pop.style.top=top+'px';
+}
+function close(){sel=null;pop.hidden=true;paint()}
+function show(id){
+  const n=byId[id];
+  const tags=[`<span class="tag">${esc(n.when)}</span>`];
+  if(n.v)tags.push('<span class="tag v">Brique VIGINUM</span>');
+  if(n.g==='bonus')tags.push('<span class="tag">Bonus</span>');
+  const up=E.filter(e=>e[1]===id).map(e=>byId[e[0]].t),down=E.filter(e=>e[0]===id).map(e=>byId[e[1]].t),rel=[...nbrs(id)].filter(x=>x!==id&&!E.some(e=>(e[0]===id&&e[1]===x)||(e[1]===id&&e[0]===x))).map(x=>byId[x].t);
+  const row=(k,v)=>v&&v.length?`<dt>${esc(k)}</dt><dd>${esc(Array.isArray(v)?v.join(', '):v)}</dd>`:'';
+  pop.innerHTML=`<button type="button" id="close" aria-label="Fermer">×</button><h2>${esc(n.t)}</h2><div class="tags">${tags.join('')}</div><p>${esc(n.desc)}</p><dl>${row('Outils',n.tools)}${row('DISARM',n.disarm)}${row('Reçoit de',up)}${row('Alimente',down)}${row('Lié à',rel)}</dl><p style="margin:14px 0 0"><a href="${REPO}${esc(n.doc)}">Voir docs/${esc(n.doc)}</a></p>`;
+  pop.setAttribute('aria-label',n.t);pop.hidden=false;place();
+  document.getElementById('close').addEventListener('click',()=>{const g=document.getElementById('n-'+id);close();g.focus()});
+}
+bar.innerHTML=F.map(f=>`<button type="button" data-f="${f[0]}" aria-pressed="${f[0]===filt}">${esc(f[1])}</button>`).join('');
+bar.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;filt=b.dataset.f;bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));close()});
+svg.querySelectorAll('.nd').forEach(g=>{
+  const id=g.dataset.id;
+  g.addEventListener('mouseenter',()=>paint(id));g.addEventListener('mouseleave',()=>paint());
+  g.addEventListener('focus',()=>paint(id));g.addEventListener('blur',()=>paint());
+  const pick=()=>{if(sel===id){close();return}sel=id;paint();show(id)};
+  g.addEventListener('click',pick);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick()}});
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&sel)close()});
+svg.addEventListener('click',ev=>{if(!ev.target.closest('.nd')&&sel)close()});
+const ro=new ResizeObserver(place);ro.observe(stage);
+paint();
+}
+</script>
+</body>
+</html>
